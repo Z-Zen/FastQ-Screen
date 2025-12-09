@@ -208,7 +208,7 @@ if (defined $aligner) {
     $aligner = lc $aligner;
     if ( ( $aligner ne 'bowtie' ) and ( $aligner ne 'bowtie2' ) and ($aligner ne 'bwa') and ($aligner ne 'minimap2') )  {
         die "Valid options for --aligner are 'bowtie', 'bowtie2', 'bwa' or 'minimap2' only.\n";
-    } elsif ( ( $aligner eq 'bowtie' ) and ( defined $bowtie2_opts ) ) {
+    } elsif ( ( $aligner eq 'bowtie' ) and ( defined $ ) ) {
         die "Bowtie selected as the aligner yet bowtie2 options specified.\n"; 
     } elsif ( ( $aligner eq 'bowtie' ) and ( defined $bwa_opts ) ) {
         die "Bowtie selected as the aligner yet BWA options specified.\n";
@@ -222,7 +222,7 @@ if (defined $aligner) {
         die "Bowtie 2 selected as the aligner yet minimap2 options specified.\n";
     } elsif ( ( $aligner eq 'bwa' ) and ( defined $bowtie_opts ) ) {
         die "BWA selected as the aligner yet Bowtie options specified.\n";
-    } elsif ( ( $aligner eq 'bwa' ) and ( defined $bowtie2_opts ) ) {
+    } elsif ( ( $aligner eq 'bwa' ) and ( defined $ ) ) {
         die "BWA selected as the aligner yet Bowtie 2 options specified.\n";
     } elsif ( ( $aligner eq 'bwa' ) and ( defined $minimap2_opts ) ) {
         die "BWA selected as the aligner yet minimap2 options specified.\n";
@@ -230,7 +230,7 @@ if (defined $aligner) {
         die "minimap2 selected as the aligner yet BWA options specified.\n";
     } elsif ( ( $aligner eq 'minimap2' ) and ( defined $bowtie_opts ) ) {
         die "minimap2 selected as the aligner yet Bowtie options specified.\n";
-    } elsif ( ( $aligner eq 'minimap2' ) and ( defined $bowtie2_opts ) ) {
+    } elsif ( ( $aligner eq 'minimap2' ) and ( defined $ ) ) {
         die "minimap2 selected as the aligner yet Bowtie 2 options specified.\n";
     }
 }
@@ -240,7 +240,7 @@ if( (defined $bismark_opts) and (!defined $bisulfite) ){
 }
 
 $bowtie_opts  = '' unless (defined $bowtie_opts);     # Get undef warnings otherwise
-$bowtie2_opts = '' unless (defined $bowtie2_opts);
+$ = '' unless (defined $);
 $bwa_opts = '' unless (defined $bwa_opts);
 $bismark_opts = '' unless (defined $bismark_opts);
 $minimap2_opts = '' unless (defined $minimap2_opts);
@@ -1269,11 +1269,14 @@ sub conventional_mapping {
     my ( $illumina_flag, $read_length, $library, $file, $error_filename, $index_genomes_ref, $library_index, $error_fh ) = @_;
     my $aligner_command;
 
+    # set default bowtie2 if not specified by user
+    my $bowtie2_options = $bowtie2_opts || '-k 2 --very-fast-local';
+
     #Determine whether to execute bowtie1 or bowtie2
     if ( $aligner eq 'bowtie' ) {
         $aligner_command = "$path_to_bowtie $bowtie_opts --sam $illumina_flag -l $read_length -k 2 --chunkmbs 512 -p $number_of_threads $library->[1] \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'bowtie2') {    #Using Bowtie2
-        $aligner_command = "$path_to_bowtie2 $illumina_flag -k 2 --very-fast-local --no-hd --no-unal -p $number_of_threads -x $library->[1] $bowtie2_opts -U \'$file\' 2>$error_filename |";
+        $aligner_command = "$path_to_bowtie2 $illumina_flag $bowtie2_options --no-hd --no-unal -p $number_of_threads -x $library->[1] -U \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'bwa')  {    #BWA
     	$aligner_command = "$path_to_bwa mem -a $bwa_opts $illumina_flag -t $number_of_threads $library->[1] \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'minimap2')  {    #minimap2
