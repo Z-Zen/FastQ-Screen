@@ -1273,7 +1273,7 @@ sub conventional_mapping {
     if ( $aligner eq 'bowtie' ) {
         $aligner_command = "$path_to_bowtie $bowtie_opts --sam $illumina_flag -l $read_length -k 2 --chunkmbs 512 -p $number_of_threads $library->[1] \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'bowtie2') {    #Using Bowtie2
-        $aligner_command = "$path_to_bowtie2 $bowtie2_opts $illumina_flag -k 2 --very-fast-local --no-hd --no-unal -p $number_of_threads -x $library->[1] -U \'$file\' 2>$error_filename |";
+        $aligner_command = "$path_to_bowtie2 $illumina_flag -k 2 --very-fast-local --no-hd --no-unal -p $number_of_threads -x $library->[1] $bowtie2_opts -U \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'bwa')  {    #BWA
     	$aligner_command = "$path_to_bwa mem -a $bwa_opts $illumina_flag -t $number_of_threads $library->[1] \'$file\' 2>$error_filename |";
     } elsif ($aligner eq 'minimap2')  {    #minimap2
