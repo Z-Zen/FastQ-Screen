@@ -1282,6 +1282,8 @@ sub conventional_mapping {
         die "Unknown aligner";
     }
 
+    warn "Aligner command: $aligner_command\n" unless ($quiet);
+
     open( ALIGNER, $aligner_command ) or die "Failed to launch aligner command '$aligner_command': $!";
 
     my $seqname_suffix = 1;    #Explained below
